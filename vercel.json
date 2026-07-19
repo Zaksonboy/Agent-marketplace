@@ -1,1 +1,8 @@
-
+{
+  "functions": {
+    "api/run-agentic-job.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  }
+}
