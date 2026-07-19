@@ -1,1 +1,9 @@
-
+{
+  "name": "agent-marketplace-arc",
+  "version": "1.0.0",
+  "description": "Agentic Economy Track submission - two autonomous agents settling nanopayments in USDC on Arc Testnet",
+  "main": "index.html",
+  "dependencies": {
+    "ethers": "^6.13.0"
+  }
+}
