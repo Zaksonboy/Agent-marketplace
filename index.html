@@ -1,1 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent Marketplace</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #fafafa;
+    color: #111;
+    padding: 24px 16px 60px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  p.sub { color: #777; font-size: 13px; margin: 0 0 20px; }
+  label { font-size: 12px; color: #555; display: block; margin: 14px 0 6px; }
+  textarea, input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  textarea { min-height: 80px; resize: vertical; }
+  button {
+    width: 100%;
+    margin-top: 18px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  button:disabled { opacity: 0.4; }
+  #log { margin-top: 22px; }
+  .row {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 13px;
+  }
+  .row .agent { font-weight: 600; }
+  .row .text { color: #555; margin-top: 2px; }
+  .paid .agent { color: #1a9e5c; }
+  .rejected .agent { color: #c0392b; }
+  .work .agent { color: #2f6fd6; }
+  #summary { margin-top: 16px; font-size: 13px; color: #555; }
+</style>
+</head>
+<body>
+  <h1>Agent Marketplace</h1>
+  <p class="sub">Worker Agent does the job. Requester Agent verifies and pays in USDC — no human involved.</p>
 
+  <label>Job (one paragraph per line)</label>
+  <textarea id="jobText">Arc is a stablecoin-native chain built for payments and agentic commerce.
+Circle's Agent Stack lets autonomous agents hold wallets and transact in USDC.
+Nanopayments let agents pay per unit of verified work instead of one lump sum.</textarea>
+
+  <label>Worker wallet address</label>
+  <input id="workerAddress" placeholder="0x..." />
+
+  <button id="runBtn" onclick="runJob()">Run Job</button>
+
+  <div id="log"></div>
+  <div id="summary"></div>
+
+<script>
+async function runJob() {
+  const btn = document.getElementById('runBtn');
+  const text = document.getElementById('jobText').value;
+  const workerAddress = document.getElementById('workerAddress').value.trim();
+  const log = document.getElementById('log');
+  const summary = document.getElementById('summary');
+
+  if (!workerAddress) { alert('Enter the Worker wallet address'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Running...';
+  log.innerHTML = '';
+  summary.textContent = '';
+
+  try {
+    const res = await fetch('/api/run-agentic-job', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, workerAddress }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    data.log.forEach((e) => {
+      const div = document.createElement('div');
+      div.className = 'row ' + e.status;
+      div.innerHTML = `<div class="agent">${e.agent} — ${e.status}</div><div class="text">${e.text}</div>`;
+      log.appendChild(div);
+    });
+
+    summary.textContent = `Total paid: $${data.spent} USDC`;
+  } catch (err) {
+    log.innerHTML = `<div class="row rejected"><div class="agent">Error</div><div class="text">${err.message}</div></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Run Job';
+  }
+}
+</script>
+</body>
+</html>
