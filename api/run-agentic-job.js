@@ -66,7 +66,6 @@ module.exports = async (req, res) => {
 
       if (decision.ok) {
         const tx = await usdc.transfer(workerAddress, ethers.parseUnits(PAY_PER_TASK, 6));
-        await tx.wait();
         spent += parseFloat(PAY_PER_TASK);
         log.push({ agent: "Requester", status: "paid", text: `$${PAY_PER_TASK} USDC · tx ${tx.hash}` });
       }
