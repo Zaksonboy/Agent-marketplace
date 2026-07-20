@@ -18,8 +18,8 @@ const BUDGET = parseFloat(process.env.MAX_BUDGET_USDC || "0.05");
 // Worker Agent: does one unit of work, returns its output
 async function doWork(paragraph) {
   const key = process.env.GEMINI_API_KEY;
-  const resp = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+  const resp = await 
+  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
